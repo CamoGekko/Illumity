@@ -232,9 +232,8 @@
                 outputElement.textContent = "";
             }
     
-            console.log = function (message) {
-                displayOutput(message);
-            };
+            console.log = displayOutput(game-output)
+          
     
             function playerTurn(choice) {
                 clearScreen();
