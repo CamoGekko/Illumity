@@ -8,7 +8,7 @@
         body {
             background-color: black;
             color: white;
-            font-size: 25;
+            font-size: 25px;
             font-family: 'Courier New', monospace;
             text-align: center;
             margin-top: 20px;
@@ -293,6 +293,7 @@
                 enemy.display();
 
                 console.log("1. Attack\n2. Use Special Attack\n3. Retreat");
+                // Temporarily use prompt for simplicity; you can replace it with a proper input method
                 let choice = parseInt(prompt());
 
                 if (choice === 1) {
