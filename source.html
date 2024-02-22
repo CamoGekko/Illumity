@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-based RPG Game Made by Chat GPT</title>
+    <style>
+        /* Add any custom styling here */
+        pre {
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <pre id="game-output"></pre>
+    <script>
+        // Define map dimensions
+        const MAP_WIDTH = 30;
+        const MAP_HEIGHT = 15;
+
+        // Define tile types
+        const EMPTY_TILE = '.';
+        const PLAYER_TILE = '@';
+        const ENEMY_TILE = 'E';
+        const OBSTACLE_TILE = '#';
+
+        // Define character stats
+        const Player = {
+            health: 100,
+            attack: 10,
+            stamina: 100
+        };
+
+        // Define game state
+        const GameState = {
+            map: [],
+            player: Player,
+            enemies: [],
+            lastAttackTime: new Date(),
+            // Add more game state attributes as needed
+        };
+
+        // Function to display the game state in the HTML document
+        function displayGame(state) {
+            const gameOutput = document.getElementById('game-output');
+            gameOutput.textContent = state.map.map(row => row.join(' ')).join('\n');
+            gameOutput.textContent += `\nPlayer Health: ${state.player.health}\n\n`;
+        }
+
+        // Function to initialize the game state
+        function initializeGame() {
+            GameState.map = Array.from({ length: MAP_HEIGHT }, () => Array(MAP_WIDTH).fill(EMPTY_TILE));
+
+            // Place player in the center
+            GameState.player.x = Math.floor(MAP_WIDTH / 2);
+            GameState.player.y = Math.floor(MAP_HEIGHT / 2);
+            GameState.map[GameState.player.y][GameState.player.x] = PLAYER_TILE;
+
+            // Generate random enemies
+            for (let i = 0; i < 5; ++i) {
+                let enemyX, enemyY;
+                do {
+                    enemyX = Math.floor(Math.random() * MAP_WIDTH);
+                    enemyY = Math.floor(Math.random() * MAP_HEIGHT);
+                } while (GameState.map[enemyY][enemyX] !== EMPTY_TILE);
+
+                GameState.enemies.push({ x: enemyX, y: enemyY, health: 20 });
+                GameState.map[enemyY][enemyX] = ENEMY_TILE;
+            }
+
+            // Generate random obstacles
+            for (let i = 0; i < 10; ++i) {
+                let obstacleX, obstacleY;
+                do {
+                    obstacleX = Math.floor(Math.random() * MAP_WIDTH);
+                    obstacleY = Math.floor(Math.random() * MAP_HEIGHT);
+                } while (GameState.map[obstacleY][obstacleX] !== EMPTY_TILE);
+
+                GameState.map[obstacleY][obstacleX] = OBSTACLE_TILE;
+            }
+
+            return GameState;
+        }
+
+        // Function to handle player input and update game state
+        function handleInput(state) {
+            document.addEventListener('keydown', (event) => {
+                switch (event.key) {
+                    case 'w':
+                        movePlayer(state, 0, -1);
+                        break;
+                    case 's':
+                        movePlayer(state, 0, 1);
+                        break;
+                    case 'a':
+                        movePlayer(state, -1, 0);
+                        break;
+                    case 'd':
+                        movePlayer(state, 1, 0);
+                        break;
+                    case ' ':
+                        // Perform player attack with stamina cost
+                        if (state.player.stamina >= 20) {
+                            attackEnemies(state);
+                            state.player.stamina -= 20;
+                        } else {
+                            console.log("Not enough stamina to attack.");
+                        }
+                        break;
+                }
+            });
+        }
+
+        // Function to move the player on the map
+        function movePlayer(state, deltaX, deltaY) {
+            const playerX = state.player.x || 0;
+            const playerY = state.player.y || 0;
+
+            const newPlayerX = playerX + deltaX;
+            const newPlayerY = playerY + deltaY;
+
+            if (isValidMove(state.map, newPlayerX, newPlayerY)) {
+                state.map[playerY][playerX] = EMPTY_TILE;
+                state.player.x = newPlayerX;
+                state.player.y = newPlayerY;
+                state.map[newPlayerY][newPlayerX] = PLAYER_TILE;
+            }
+        }
+
+        // Function to check if a move is valid
+        function isValidMove(map, x, y) {
+            return x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT && map[y][x] === EMPTY_TILE;
+        }
+
+        // Function to handle player attacks
+        function attackEnemies(state) {
+            // Check if the player is currently in a cooldown period
+            const currentTime = new Date();
+            const elapsedTime = currentTime - state.lastAttackTime;
+
+            if (elapsedTime < 1000) { // Adjust the cooldown time as needed
+                console.log("Attack is on cooldown. Wait for a moment.");
+                return;
+            }
+
+            const playerX = state.player.x || 0;
+            const playerY = state.player.y || 0;
+
+            // Iterate through enemies and check for collisions
+            for (let i = 0; i < state.enemies.length; ++i) {
+                const enemyX = state.enemies[i].x || 0;
+                const enemyY = state.enemies[i].y || 0;
+
+                if (isAdjacent(playerX, playerY, enemyX, enemyY)) {
+                    // Perform a basic attack
+                    state.enemies[i].health -= state.player.attack;
+
+                    // Check if the enemy is defeated
+                    if (state.enemies[i].health <= 0) {
+                        state.map[enemyY][enemyX] = EMPTY_TILE;
+                        state.enemies.splice(i, 1);
+                        --i;  // Adjust index after removing an enemy
+                    }
+
+                    // Set the last attack time for cooldown
+                    state.lastAttackTime = currentTime;
+                }
+            }
+        }
+
+        // Function to check if two positions are adjacent
+        function isAdjacent(x1, y1, x2, y2) {
+            return (Math.abs(x1 - x2) === 1 && y1 === y2) || (Math.abs(y1 - y2) === 1 && x1 === x2);
+        }
+
+        // Function to update the game state
+        function update(state) {
+            // Example: Update player stamina over time
+            if (state.player.stamina < 100) {
+                state.player.stamina += 1;
+            }
+
+            // Example: Check for collisions between player and enemies
+            const playerX = state.player.x || 0;
+            const playerY = state.player.y || 0;
+
+            for (let i = 0; i < state.enemies.length; ++i) {
+                const enemyX = state.enemies[i].x || 0;
+                const enemyY = state.enemies[i].y || 0;
+
+                if (playerX === enemyX && playerY === enemyY) {
+                    // Example: Reduce player health on collision with an enemy
+                    state.player.health -= 10;
+
+                    // Example: Remove the enemy on collision
+                    state.map[enemyY][enemyX] = EMPTY_TILE;
+                    state.enemies.splice(i, 1);
+                    --i;  // Adjust index after removing an enemy
+                }
+            }
+        }
+
+        // Function to run the game loop
+        function runGameLoop() {
+            const gameState = initializeGame();
+
+            setInterval(() => {
+                displayGame(gameState);
+                handleInput(gameState);
+                update(gameState);
+            }, 1000);  // Adjust the interval as needed
+        }
+
+        // Start the game loop
+        runGameLoop();
+    </script>
+</body>
+</html>
