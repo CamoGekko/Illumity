@@ -31,7 +31,7 @@
 <body>
     <h1>Welcome CamoGekko's web dungeon crawler</h1>
     <pre id="game-output"></pre>
-    <div>
+    <div id="button-container">
         <button onclick="makeChoice(1)">1. Explore</button>
         <button onclick="makeChoice(2)">2. Heal</button>
         <button onclick="makeChoice(3)">3. View Inventory</button>
@@ -252,6 +252,7 @@
         };
 
         function playerTurn(choice) {
+            clearScreen();
             switch (choice) {
                 case 1:
                     explorePhase(player, enemies, traps, chests, dungeon);
@@ -292,45 +293,35 @@
                 player.display();
                 enemy.display();
 
-                console.log("1. Attack\n2. Use Special Attack\n3. Retreat");
-                // Temporarily use prompt for simplicity; you can replace it with a proper input method
-                let choice = parseInt(prompt());
-
-                if (choice === 1) {
-                    enemy.takeDamage(player.attack);
-                    if (enemy.health <= 0) {
-                        console.log("You defeated the enemy!");
-                        player.addToInventory("Potion");
-                    } else {
-                        enemy.attackPlayer(player);
-                        if (player.health <= 0) {
-                            console.log("You were defeated by the enemy!");
-                            exit(0);
-                        }
-                    }
-                } else if (choice === 2) {
-                    player.performSpecialAttack(enemy);
-                    if (enemy.health <= 0) {
-                        console.log("You defeated the enemy!");
-                        player.addToInventory("Potion");
-                    } else {
-                        enemy.attackPlayer(player);
-                        if (player.health <= 0) {
-                            console.log("You were defeated by the enemy!");
-                            exit(0);
-                        }
-                    }
-                } else {
-                    console.log("You successfully retreated from the battle.");
-                }
+                switchButtonSet(false); // Switch buttons for combat
+                displayOutput("1. Attack\n2. Use Special Attack\n3. Retreat");
             }
+        }
 
-            // Update dungeon map (mark as visited)
-            dungeon[Math.floor(Math.random() * dungeon.length)][Math.floor(Math.random() * dungeon[0].length)] = 'V';
+        function switchButtonSet(isExploring) {
+            const buttonContainer = document.getElementById("button-container");
+            buttonContainer.innerHTML = "";
 
-            // Player has successfully cleared the enemies
-            console.log("You cleared the enemies! Continue exploring...\n \n");
-            player.levelUp();
+            if (isExploring) {
+                addButton("1. Explore", 1);
+                addButton("2. Heal", 2);
+                addButton("3. View Inventory", 3);
+                addButton("4. Quit", 4);
+            } else {
+                addButton("1. Attack", 1);
+                addButton("2. Use Special Attack", 2);
+                addButton("3. Retreat", 3);
+            }
+        }
+
+        function addButton(label, value) {
+            const buttonContainer = document.getElementById("button-container");
+            const button = document.createElement("button");
+            button.textContent = label;
+            button.onclick = function () {
+                makeChoice(value);
+            };
+            buttonContainer.appendChild(button);
         }
     </script>
 </body>
