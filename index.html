@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text-based RPG Game Made by Chat GPT</title>
     <style>
-        /* Add any custom styling here */
+        body {
+            background-color: black;
+            color: white;
+        }
         pre {
             font-family: 'Courier New', monospace;
             white-space: pre-wrap;
@@ -16,14 +19,15 @@
     <pre id="game-output"></pre>
     <script>
         // Define map dimensions
-        const MAP_WIDTH = 30;
-        const MAP_HEIGHT = 15;
+        const MAP_WIDTH = 100;
+        const MAP_HEIGHT = 50;
 
         // Define tile types
         const EMPTY_TILE = '.';
         const PLAYER_TILE = '@';
         const ENEMY_TILE = 'E';
         const OBSTACLE_TILE = '#';
+        const CHEST_TILE = 'C';
 
         // Define character stats
         const Player = {
@@ -201,19 +205,38 @@
             }
         }
 
-        // Function to run the game loop
-        function runGameLoop() {
-            const gameState = initializeGame();
+        function mainGameLoop() {
+            const state = initializeGame();
 
-            setInterval(() => {
-                displayGame(gameState);
-                handleInput(gameState);
-                update(gameState);
-            }, 1000);  // Adjust the interval as needed
+            for (let level = 1; level <= 30; ++level) {
+                // Regular level
+                if (level % 5 !== 0) {
+                    console.log(`Entering Level ${level}`);
+                    generateLevel(state);
+                    while (true) {
+                        displayGame(state);
+                        handleInput(state);
+                        update(state);
+
+                        if (state.player.health <= 0 || state.enemies.length === 0) {
+                            console.log(`Level ${level} cleared!`);
+                            break;
+                        }
+                    }
+                }
+                // Boss level
+                else {
+                    bossEncounter(state, level);
+                    if (state.player.health <= 0) {
+                        console.log("Game Over! You were defeated by the final boss.");
+                        break;
+                    }
+                }
+            }
         }
 
-        // Start the game loop
-        runGameLoop();
+        // Call the main game loop to start the game
+        mainGameLoop();
     </script>
 </body>
 </html>
