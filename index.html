@@ -292,26 +292,91 @@
             }
     
             function explorePhase(player, enemies, traps, chests, dungeon) {
-                const enemyCount = Math.floor(Math.random() * 3) + 1;
-    
-                for (let i = 0; i < enemyCount; ++i) {
-                    enemies.push(new Enemy(
-                        50 + (player.level - 1) * 10,
-                        15 + (player.level - 1) * 5,
-                        player.level,
-                        `Enemy${i + 1}`,
-                        `SpecialAttack${i + 1}`
-                    ));
+    const enemyCount = Math.floor(Math.random() * 3) + 1;
+
+    for (let i = 0; i < enemyCount; ++i) {
+        enemies.push(new Enemy(
+            50 + (player.level - 1) * 10,
+            15 + (player.level - 1) * 5,
+            player.level,
+            `Enemy${i + 1}`,
+            `SpecialAttack${i + 1}`
+        ));
+    }
+
+    function handleCombatChoice(choice) {
+        const enemy = enemies.shift(); // Take the first enemy in the array
+
+        switch (choice) {
+            case 1:
+                enemy.takeDamage(player.attack);
+                if (enemy.health <= 0) {
+                    displayOutput("You defeated the enemy!");
+                    player.addToInventory("Potion");
+                } else {
+                    enemy.attackPlayer(player);
+                    if (player.health <= 0) {
+                        displayOutput("You were defeated by the enemy!");
+                        exit(0);
+                    }
                 }
-    
-                for (const enemy of enemies) {
-                    player.display();
-                    enemy.display();
-    
-                    switchButtonSet(false); // Switch buttons for combat
-                    displayOutput("1. Attack\n2. Use Special Attack\n3. Retreat");
+                break;
+
+            case 2:
+                player.performSpecialAttack(enemy);
+                if (enemy.health <= 0) {
+                    displayOutput("You defeated the enemy!");
+                    player.addToInventory("Potion");
+                } else {
+                    enemy.attackPlayer(player);
+                    if (player.health <= 0) {
+                        displayOutput("You were defeated by the enemy!");
+                        exit(0);
+                    }
                 }
-            }
+                break;
+
+            case 3:
+                displayOutput("You successfully retreated from the battle.");
+                break;
+
+            default:
+                displayOutput("Invalid choice. Please try again.");
+                break;
+        }
+
+        // Check if there are more enemies
+        if (enemies.length > 0) {
+            displayOutput("Choose your action:");
+            switchButtonSet(false); // Switch buttons for combat
+        } else {
+            // Update dungeon map (mark as visited)
+            dungeon[Math.floor(Math.random() * dungeon.length)][Math.floor(Math.random() * dungeon[0].length)] = 'V';
+
+            // Player has successfully cleared the enemies
+            displayOutput("You cleared the enemies! Continue exploring...\n \n");
+            switchButtonSet(true); // Switch back to exploration buttons
+            player.levelUp();
+        }
+    }
+
+    displayOutput("Choose your action:");
+    switchButtonSet(false); // Switch buttons for combat
+
+    // Temporarily using prompt for simplicity; replace it with your input method
+    // The actual input method might involve button clicks or some other user interaction
+    function combatChoicePrompt() {
+        let choice = parseInt(prompt());
+        handleCombatChoice(choice);
+    }
+
+    // Example: Set up a listener for button clicks corresponding to combat choices
+    document.getElementById("button-container").addEventListener("click", function (event) {
+        const choice = parseInt(event.target.value);
+        handleCombatChoice(choice);
+    });
+}
+
     
             function switchButtonSet(isExploring) {
                 const buttonContainer = document.getElementById("button-container");
