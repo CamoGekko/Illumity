@@ -28,287 +28,286 @@
         }
     </style>
 </head>
-<body>
-    <h1>Welcome CamoGekko's web dungeon crawler</h1>
-    <pre id="game-output"></pre>
-    <div id="button-container">
-        <button onclick="playerTurn(1)">1. Explore</button>
-        <button onclick="playerTurn(2)">2. Heal</button>
-        <button onclick="playerTurn(3)">3. View Inventory</button>
-        <button onclick="playerTurn(4)">4. Quit</button>
-    </div>
-
-    <script>
-        class Character {
-            constructor(health, attack) {
-                this.health = health;
-                this.attack = attack;
-            }
-
-            display() {
-                console.log(`Character: ${this.health} health, ${this.attack} attack`);
-            }
-
-            takeDamage(damage) {
-                this.health -= damage;
-                if (this.health < 0) {
-                    this.health = 0;
+    <body>
+        <h1>Welcome CamoGekko's web dungeon crawler</h1>
+        <pre id="game-output"></pre>
+        <div id="button-container">
+            <button onclick="playerTurn(1)">1. Explore</button>
+            <button onclick="playerTurn(2)">2. Heal</button>
+            <button onclick="playerTurn(3)">3. View Inventory</button>
+            <button onclick="playerTurn(4)">4. Quit</button>
+        </div>
+    
+        <script>
+            class Character {
+                constructor(health, attack) {
+                    this.health = health;
+                    this.attack = attack;
+                }
+    
+                display() {
+                    console.log(`Character: ${this.health} health, ${this.attack} attack`);
+                }
+    
+                takeDamage(damage) {
+                    this.health -= damage;
+                    if (this.health < 0) {
+                        this.health = 0;
+                    }
+                }
+    
+                performSpecialAttack(target) {
+                    console.log("Performing special attack");
+                    // Implement special attack logic here
                 }
             }
-
-            performSpecialAttack(target) {
-                console.log("Performing special attack");
-                // Implement special attack logic here
-            }
-        }
-
-        class Player extends Character {
-            constructor(health, attack) {
-                super(health, attack);
-                this.maxHealth = health;
-                this.level = 1;
-                this.inventory = [];
-            }
-
-            display() {
-                console.log(`Player (Level ${this.level}): ${this.health} health, ${this.attack} attack`);
-                console.log("Inventory: " + this.inventory.join(" "));
-            }
-
-            heal() {
-                this.health += Math.floor(this.maxHealth / 2);
-                if (this.health > this.maxHealth) {
-                    this.health = this.maxHealth;
+    
+            class Player extends Character {
+                constructor(health, attack) {
+                    super(health, attack);
+                    this.maxHealth = health;
+                    this.level = 1;
+                    this.inventory = [];
+                }
+    
+                display() {
+                    console.log(`Player (Level ${this.level}): ${this.health} health, ${this.attack} attack`);
+                    console.log("Inventory: " + this.inventory.join(" "));
+                }
+    
+                heal() {
+                    this.health += Math.floor(this.maxHealth / 2);
+                    if (this.health > this.maxHealth) {
+                        this.health = this.maxHealth;
+                    }
+                }
+    
+                levelUp() {
+                    this.level++;
+                    this.maxHealth += 10;
+                    this.attack += 5;
+                    this.heal();
+                }
+    
+                addToInventory(item) {
+                    this.inventory.push(item);
+                    if (item === "Better Sword") {
+                        this.attack += 10;
+                        console.log("You equipped a Better Sword! Your attack increased.\n \n");
+                    }
+                }
+    
+                performSpecialAttack(target) {
+                    console.log("Player performs a Double Attack!");
+                    target.takeDamage(2 * this.attack);
                 }
             }
-
-            levelUp() {
-                this.level++;
-                this.maxHealth += 10;
-                this.attack += 5;
-                this.heal();
-            }
-
-            addToInventory(item) {
-                this.inventory.push(item);
-                if (item === "Better Sword") {
-                    this.attack += 10;
-                    console.log("You equipped a Better Sword! Your attack increased.\n \n");
+    
+            class Enemy extends Character {
+                constructor(health, attack, level, name, specialAttackName) {
+                    super(health, attack);
+                    this.level = level;
+                    this.name = name;
+                    this.specialAttackName = specialAttackName;
+                }
+    
+                display() {
+                    console.log(`Enemy: ${this.name} (Level ${this.level}): ${this.health} health, ${this.attack} attack`);
+                }
+    
+                performSpecialAttack(target) {
+                    console.log(`${this.name} performs ${this.specialAttackName}!`);
+                    // Implement special attack logic here
                 }
             }
-
-            performSpecialAttack(target) {
-                console.log("Player performs a Double Attack!");
-                target.takeDamage(2 * this.attack);
-            }
-        }
-
-        class Enemy extends Character {
-            constructor(health, attack, level, name, specialAttackName) {
-                super(health, attack);
-                this.level = level;
-                this.name = name;
-                this.specialAttackName = specialAttackName;
-            }
-
-            display() {
-                console.log(`Enemy: ${this.name} (Level ${this.level}): ${this.health} health, ${this.attack} attack`);
-            }
-
-            performSpecialAttack(target) {
-                console.log(`${this.name} performs ${this.specialAttackName}!`);
-                // Implement special attack logic here
-            }
-        }
-
-        class Boss extends Character {
-            constructor(health, attack) {
-                super(health, attack);
-            }
-
-            display() {
-                console.log(`Boss: ${this.health} health, ${this.attack} attack`);
-            }
-
-            takeDamage(damage) {
-                this.health -= damage;
-                if (this.health < 0) {
-                    this.health = 0;
+    
+            class Boss extends Character {
+                constructor(health, attack) {
+                    super(health, attack);
+                }
+    
+                display() {
+                    console.log(`Boss: ${this.health} health, ${this.attack} attack`);
+                }
+    
+                takeDamage(damage) {
+                    this.health -= damage;
+                    if (this.health < 0) {
+                        this.health = 0;
+                    }
+                }
+    
+                performSpecialAttack(player) {
+                    console.log("Boss performs a Special Attack!");
+                    // Implement the special attack logic for the boss
+                    player.takeDamage(1.5 * this.attack);
                 }
             }
-
-            performSpecialAttack(player) {
-                console.log("Boss performs a Special Attack!");
-                // Implement the special attack logic for the boss
-                player.takeDamage(1.5 * this.attack);
-            }
-        }
-
-        class Chest {
-            constructor() {
-                const random = Math.floor(Math.random() * 3);
-                if (random === 0) {
-                    this.content = "Better Sword";
-                } else if (random === 1) {
-                    this.content = "Healing Potion";
-                } else {
-                    this.content = "Gold";
+    
+            class Chest {
+                constructor() {
+                    const random = Math.floor(Math.random() * 3);
+                    if (random === 0) {
+                        this.content = "Better Sword";
+                    } else if (random === 1) {
+                        this.content = "Healing Potion";
+                    } else {
+                        this.content = "Gold";
+                    }
+                }
+    
+                display() {
+                    console.log(`You found a chest containing: ${this.content}`);
                 }
             }
-
-            display() {
-                console.log(`You found a chest containing: ${this.content}`);
+    
+            class Trap {
+                constructor(type, damage) {
+                    this.type = type;
+                    this.damage = damage;
+                }
+    
+                trigger(player) {
+                    console.log(`You triggered a ${this.type} trap!`);
+                    player.takeDamage(this.damage);
+                    console.log(`You took ${this.damage} damage.\n`);
+                }
             }
-        }
-
-        class Trap {
-            constructor(type, damage) {
-                this.type = type;
-                this.damage = damage;
+    
+            class Shop {
+                visitShop(player) {
+                    console.log("Welcome to the Shop!");
+                    console.log("1. Buy Healing Potion (10 Gold)\n2. Buy Upgrade (50 Gold)\n3. Leave Shop");
+    
+                    const choice = parseInt(prompt("Enter your choice:"));
+    
+                    switch (choice) {
+                        case 1:
+                            if (player.inventoryContains("Gold", 10)) {
+                                player.removeFromInventory("Gold", 10);
+                                player.addToInventory("Healing Potion");
+                                console.log("You bought a Healing Potion!\n");
+                            } else {
+                                console.log("Not enough Gold!\n");
+                            }
+                            break;
+    
+                        case 2:
+                            if (player.inventoryContains("Gold", 50)) {
+                                player.removeFromInventory("Gold", 50);
+                                player.upgradeWeapon();
+                                console.log("You upgraded your weapon!\n");
+                            } else {
+                                console.log("Not enough Gold!\n");
+                            }
+                            break;
+    
+                        case 3:
+                            console.log("Thanks for visiting the Shop!\n");
+                            break;
+    
+                        default:
+                            console.log("Invalid choice. Please try again.\n");
+                    }
+                }
             }
-
-            trigger(player) {
-                console.log(`You triggered a ${this.type} trap!`);
-                player.takeDamage(this.damage);
-                console.log(`You took ${this.damage} damage.\n`);
+    
+            const dungeonSize = 10;
+            const dungeon = Array.from({ length: dungeonSize }, () => Array(dungeonSize).fill('.'));
+    
+            const player = new Player(100, 5);
+            const enemies = [];
+            const traps = [];
+            const chests = [];
+            const shop = new Shop();
+            const boss = new Boss(300, 25);
+    
+            function displayOutput(message) {
+                const outputElement = document.getElementById("game-output");
+                outputElement.textContent += message + "\n";
             }
-        }
-
-        class Shop {
-            visitShop(player) {
-                console.log("Welcome to the Shop!");
-                console.log("1. Buy Healing Potion (10 Gold)\n2. Buy Upgrade (50 Gold)\n3. Leave Shop");
-
-                const choice = parseInt(prompt("Enter your choice:"));
-
+    
+            function clearScreen() {
+                const outputElement = document.getElementById("game-output");
+                outputElement.textContent = "";
+            }
+    
+            console.log = function (message) {
+                displayOutput(message);
+            };
+    
+            function playerTurn(choice) {
+                clearScreen();
                 switch (choice) {
                     case 1:
-                        if (player.inventoryContains("Gold", 10)) {
-                            player.removeFromInventory("Gold", 10);
-                            player.addToInventory("Healing Potion");
-                            console.log("You bought a Healing Potion!\n");
-                        } else {
-                            console.log("Not enough Gold!\n");
-                        }
+                        explorePhase(player, enemies, traps, chests, dungeon);
                         break;
-
+    
                     case 2:
-                        if (player.inventoryContains("Gold", 50)) {
-                            player.removeFromInventory("Gold", 50);
-                            player.upgradeWeapon();
-                            console.log("You upgraded your weapon!\n");
-                        } else {
-                            console.log("Not enough Gold!\n");
-                        }
+                        player.heal();
+                        console.log("You have been healed.\n \n");
                         break;
-
+    
                     case 3:
-                        console.log("Thanks for visiting the Shop!\n");
+                        player.display();
                         break;
-
+    
+                    case 4:
+                        console.log("Thank you for playing! Goodbye.\n \n");
+                        exit(0);
+    
                     default:
-                        console.log("Invalid choice. Please try again.\n");
+                        console.log("Invalid choice. Please try again.\n \n");
                 }
             }
-        }
-
-        const dungeonSize = 10;
-        const dungeon = Array.from({ length: dungeonSize }, () => Array(dungeonSize).fill('.'));
-
-        const player = new Player(100, 5);
-        const enemies = [];
-        const traps = [];
-        const chests = [];
-        const shop = new Shop();
-        const boss = new Boss(300, 25);
-
-        function displayOutput(message) {
-            const outputElement = document.getElementById("game-output");
-            outputElement.textContent += message + "\n";
-        }
-
-        function clearScreen() {
-            const outputElement = document.getElementById("game-output");
-            outputElement.textContent = "";
-        }
-
-        console.log = function (message) {
-            displayOutput(message);
-        };
-
-        function playerTurn(choice) {
-            clearScreen();
-            switch (choice) {
-                case 1:
-                    explorePhase(player, enemies, traps, chests, dungeon);
-                    break;
-
-                case 2:
-                    player.heal();
-                    console.log("You have been healed.\n \n");
-                    break;
-
-                case 3:
+    
+            function explorePhase(player, enemies, traps, chests, dungeon) {
+                const enemyCount = Math.floor(Math.random() * 3) + 1;
+    
+                for (let i = 0; i < enemyCount; ++i) {
+                    enemies.push(new Enemy(
+                        50 + (player.level - 1) * 10,
+                        15 + (player.level - 1) * 5,
+                        player.level,
+                        `Enemy${i + 1}`,
+                        `SpecialAttack${i + 1}`
+                    ));
+                }
+    
+                for (const enemy of enemies) {
                     player.display();
-                    break;
-
-                case 4:
-                    console.log("Thank you for playing! Goodbye.\n \n");
-                    exit(0);
-
-                default:
-                    console.log("Invalid choice. Please try again.\n \n");
+                    enemy.display();
+    
+                    switchButtonSet(false); // Switch buttons for combat
+                    displayOutput("1. Attack\n2. Use Special Attack\n3. Retreat");
+                }
             }
-        }
-
-        function explorePhase(player, enemies, traps, chests, dungeon) {
-            const enemyCount = Math.floor(Math.random() * 3) + 1;
-
-            for (let i = 0; i < enemyCount; ++i) {
-                enemies.push(new Enemy(
-                    50 + (player.level - 1) * 10,
-                    15 + (player.level - 1) * 5,
-                    player.level,
-                    `Enemy${i + 1}`,
-                    `SpecialAttack${i + 1}`
-                ));
+    
+            function switchButtonSet(isExploring) {
+                const buttonContainer = document.getElementById("button-container");
+                buttonContainer.innerHTML = "";
+    
+                if (isExploring) {
+                    addButton("1. Explore", 1);
+                    addButton("2. Heal", 2);
+                    addButton("3. View Inventory", 3);
+                    addButton("4. Quit", 4);
+                } else {
+                    addButton("1. Attack", 1);
+                    addButton("2. Use Special Attack", 2);
+                    addButton("3. Retreat", 3);
+                }
             }
-
-            for (const enemy of enemies) {
-                player.display();
-                enemy.display();
-
-                switchButtonSet(false); // Switch buttons for combat
-                displayOutput("1. Attack\n2. Use Special Attack\n3. Retreat");
+    
+            function addButton(label, value) {
+                const buttonContainer = document.getElementById("button-container");
+                const button = document.createElement("button");
+                button.textContent = label;
+                button.onclick = function () {
+                    makeChoice(value);
+                };
+                buttonContainer.appendChild(button);
             }
-        }
-
-        function switchButtonSet(isExploring) {
-            const buttonContainer = document.getElementById("button-container");
-            buttonContainer.innerHTML = "";
-
-            if (isExploring) {
-                addButton("1. Explore", 1);
-                addButton("2. Heal", 2);
-                addButton("3. View Inventory", 3);
-                addButton("4. Quit", 4);
-            } else {
-                addButton("1. Attack", 1);
-                addButton("2. Use Special Attack", 2);
-                addButton("3. Retreat", 3);
-            }
-        }
-
-        function addButton(label, value) {
-            const buttonContainer = document.getElementById("button-container");
-            const button = document.createElement("button");
-            button.textContent = label;
-            button.onclick = function () {
-                makeChoice(value);
-            };
-            buttonContainer.appendChild(button);
-        }
-    </script>
-</body>
+        </script>
+    </body>
 </html>
- 
