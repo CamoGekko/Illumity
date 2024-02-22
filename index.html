@@ -3,395 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text-based RPG Game Made by Chat GPT</title>
+    <title>Text-based RPG Game</title>
     <style>
         body {
             background-color: black;
             color: white;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin-top: 20px;
         }
         pre {
-            font-family: 'Courier New', monospace;
             white-space: pre-wrap;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
+    <h1>Welcome to the Enhanced Roguelite Dungeon Crawler!</h1>
     <pre id="game-output"></pre>
+    <div>
+        <button onclick="makeChoice(1)">1. Explore</button>
+        <button onclick="makeChoice(2)">2. Heal</button>
+        <button onclick="makeChoice(3)">3. View Inventory</button>
+        <button onclick="makeChoice(4)">4. Quit</button>
+    </div>
+
     <script>
-       class Character {
-  constructor(health, attack) {
-    this.health = health;
-    this.attack = attack;
-  }
+        class Character {
+            constructor(health, attack) {
+                this.health = health;
+                this.attack = attack;
+            }
 
-  display() {
-    console.log(`Character: ${this.health} health, ${this.attack} attack`);
-  }
+            display() {
+                console.log(`Character: ${this.health} health, ${this.attack} attack`);
+            }
 
-  takeDamage(damage) {
-    this.health -= damage;
-    if (this.health < 0) {
-      this.health = 0;
-    }
-  }
+            takeDamage(damage) {
+                this.health -= damage;
+                if (this.health < 0) {
+                    this.health = 0;
+                }
+            }
 
-  performSpecialAttack(target) {
-    console.log("Performing special attack");
-    // Implement special attack logic here
-  }
-}
-
-class Player extends Character {
-  constructor(health, attack) {
-    super(health, attack);
-    this.maxHealth = health;
-    this.level = 1;
-    this.inventory = [];
-  }
-
-  display() {
-    console.log(`Player (Level ${this.level}): ${this.health} health, ${this.attack} attack`);
-    console.log("Inventory: " + this.inventory.join(" "));
-  }
-
-  heal() {
-    this.health += Math.floor(this.maxHealth / 2);
-    if (this.health > this.maxHealth) {
-      this.health = this.maxHealth;
-    }
-  }
-
-  levelUp() {
-    this.level++;
-    this.maxHealth += 10;
-    this.attack += 5;
-    this.heal();
-  }
-
-  addToInventory(item) {
-    this.inventory.push(item);
-    if (item === "Better Sword") {
-      this.attack += 10;
-      console.log("You equipped a Better Sword! Your attack increased.\n \n");
-    }
-  }
-
-  performSpecialAttack(target) {
-    console.log("Player performs a Double Attack!");
-    target.takeDamage(2 * this.attack);
-  }
-}
-
-class Enemy extends Character {
-  constructor(health, attack, level, name, specialAttackName) {
-    super(health, attack);
-    this.level = level;
-    this.name = name;
-    this.specialAttackName = specialAttackName;
-  }
-
-  display() {
-    console.log(`Enemy: ${this.name} (Level ${this.level}): ${this.health} health, ${this.attack} attack`);
-  }
-
-  performSpecialAttack(target) {
-    console.log(`${this.name} performs ${this.specialAttackName}!`);
-    // Implement special attack logic here
-  }
-}
-
-class Boss extends Character {
-    constructor(health, attack) {
-        super(health, attack);
-    }
-
-    display() {
-        console.log(`Boss: ${this.health} health, ${this.attack} attack`);
-    }
-
-    takeDamage(damage) {
-        this.health -= damage;
-        if (this.health < 0) {
-            this.health = 0;
+            performSpecialAttack(target) {
+                console.log("Performing special attack");
+                // Implement special attack logic here
+            }
         }
-    }
 
-    performSpecialAttack(player) {
-        console.log("Boss performs a Special Attack!");
-        // Implement the special attack logic for the boss
-        player.takeDamage(1.5 * this.attack);
-    }
-}
+        class Player extends Character {
+            constructor(health, attack) {
+                super(health, attack);
+                this.maxHealth = health;
+                this.level = 1;
+                this.inventory = [];
+            }
 
+            display() {
+                console.log(`Player (Level ${this.level}): ${this.health} health, ${this.attack} attack`);
+                console.log("Inventory: " + this.inventory.join(" "));
+            }
 
-class Chest {
-  constructor() {
-    const random = Math.floor(Math.random() * 3);
-    if (random === 0) {
-      this.content = "Better Sword";
-    } else if (random === 1) {
-      this.content = "Healing Potion";
-    } else {
-      this.content = "Gold";
-    }
-  }
+            heal() {
+                this.health += Math.floor(this.maxHealth / 2);
+                if (this.health > this.maxHealth) {
+                    this.health = this.maxHealth;
+                }
+            }
 
-  display() {
-    console.log(`You found a chest containing: ${this.content}`);
-  }
-}
+            levelUp() {
+                this.level++;
+                this.maxHealth += 10;
+                this.attack += 5;
+                this.heal();
+            }
 
-class Trap {
-    constructor(type, damage) {
-        this.type = type;
-        this.damage = damage;
-    }
+            addToInventory(item) {
+                this.inventory.push(item);
+                if (item === "Better Sword") {
+                    this.attack += 10;
+                    console.log("You equipped a Better Sword! Your attack increased.\n \n");
+                }
+            }
 
-    trigger(player) {
-        console.log(`You triggered a ${this.type} trap!`);
-        player.takeDamage(this.damage);
-        console.log(`You took ${this.damage} damage.\n`);
-    }
-}
-
-
-class Shop {
-  visitShop(player) {
-    console.log("Welcome to the Shop!");
-    console.log("1. Buy Healing Potion (10 Gold)\n2. Buy Upgrade (50 Gold)\n3. Leave Shop");
-
-    const choice = parseInt(prompt("Enter your choice:"));
-
-    switch (choice) {
-      case 1:
-        if (player.inventoryContains("Gold", 10)) {
-          player.removeFromInventory("Gold", 10);
-          player.addToInventory("Healing Potion");
-          console.log("You bought a Healing Potion!\n");
-        } else {
-          console.log("Not enough Gold!\n");
+            performSpecialAttack(target) {
+                console.log("Player performs a Double Attack!");
+                target.takeDamage(2 * this.attack);
+            }
         }
-        break;
 
-      case 2:
-        if (player.inventoryContains("Gold", 50)) {
-          player.removeFromInventory("Gold", 50);
-          player.upgradeWeapon();
-          console.log("You upgraded your weapon!\n");
-        } else {
-          console.log("Not enough Gold!\n");
+        class Enemy extends Character {
+            constructor(health, attack, level, name, specialAttackName) {
+                super(health, attack);
+                this.level = level;
+                this.name = name;
+                this.specialAttackName = specialAttackName;
+            }
+
+            display() {
+                console.log(`Enemy: ${this.name} (Level ${this.level}): ${this.health} health, ${this.attack} attack`);
+            }
+
+            performSpecialAttack(target) {
+                console.log(`${this.name} performs ${this.specialAttackName}!`);
+                // Implement special attack logic here
+            }
         }
-        break;
 
-      case 3:
-        console.log("Thanks for visiting the Shop!\n");
-        break;
+        class Boss extends Character {
+            constructor(health, attack) {
+                super(health, attack);
+            }
 
-      default:
-        console.log("Invalid choice. Please try again.\n");
-    }
-  }
-}
+            display() {
+                console.log(`Boss: ${this.health} health, ${this.attack} attack`);
+            }
 
-function shopPhase(player, shop) {
-    shop.visitShop(player);
-}
+            takeDamage(damage) {
+                this.health -= damage;
+                if (this.health < 0) {
+                    this.health = 0;
+                }
+            }
 
+            performSpecialAttack(player) {
+                console.log("Boss performs a Special Attack!");
+                // Implement the special attack logic for the boss
+                player.takeDamage(1.5 * this.attack);
+            }
+        }
 
-function playerTurn(player, enemies, traps, chests, dungeon) {
-    let choice;
+        class Chest {
+            constructor() {
+                const random = Math.floor(Math.random() * 3);
+                if (random === 0) {
+                    this.content = "Better Sword";
+                } else if (random === 1) {
+                    this.content = "Healing Potion";
+                } else {
+                    this.content = "Gold";
+                }
+            }
 
-    console.log("1. Explore\n2. Heal\n3. View Inventory\n4. Quit");
-    console.log("Enter your choice: ");
-    choice = parseInt(prompt());
+            display() {
+                console.log(`You found a chest containing: ${this.content}`);
+            }
+        }
 
-    switch (choice) {
-        case 1:
-            explorePhase(player, enemies, traps, chests, dungeon);
-            break;
+        class Trap {
+            constructor(type, damage) {
+                this.type = type;
+                this.damage = damage;
+            }
 
-        case 2:
-            player.heal();
-            console.log("You have been healed.\n \n");
-            break;
+            trigger(player) {
+                console.log(`You triggered a ${this.type} trap!`);
+                player.takeDamage(this.damage);
+                console.log(`You took ${this.damage} damage.\n`);
+            }
+        }
 
-        case 3:
+        class Shop {
+            visitShop(player) {
+                console.log("Welcome to the Shop!");
+                console.log("1. Buy Healing Potion (10 Gold)\n2. Buy Upgrade (50 Gold)\n3. Leave Shop");
+
+                const choice = parseInt(prompt("Enter your choice:"));
+
+                switch (choice) {
+                    case 1:
+                        if (player.inventoryContains("Gold", 10)) {
+                            player.removeFromInventory("Gold", 10);
+                            player.addToInventory("Healing Potion");
+                            console.log("You bought a Healing Potion!\n");
+                        } else {
+                            console.log("Not enough Gold!\n");
+                        }
+                        break;
+
+                    case 2:
+                        if (player.inventoryContains("Gold", 50)) {
+                            player.removeFromInventory("Gold", 50);
+                            player.upgradeWeapon();
+                            console.log("You upgraded your weapon!\n");
+                        } else {
+                            console.log("Not enough Gold!\n");
+                        }
+                        break;
+
+                    case 3:
+                        console.log("Thanks for visiting the Shop!\n");
+                        break;
+
+                    default:
+                        console.log("Invalid choice. Please try again.\n");
+                }
+            }
+        }
+
+        const dungeonSize = 10;
+        const dungeon = Array.from({ length: dungeonSize }, () => Array(dungeonSize).fill('.'));
+
+        const player = new Player(100, 5);
+        const enemies = [];
+        const traps = [];
+        const chests = [];
+        const shop = new Shop();
+        const boss = new Boss(300, 25);
+
+        function makeChoice(choice) {
+            switch (choice) {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    playerTurn(choice);
+                    break;
+
+                default:
+                    displayOutput("Invalid choice. Please try again.");
+            }
+        }
+
+        function displayOutput(message) {
+            const outputElement = document.getElementById("game-output");
+            outputElement.textContent += message + "\n";
+            outputElement.scrollTop = outputElement.scrollHeight; // Auto-scroll to the bottom
+        }
+
+        console.log = function (message) {
+            displayOutput(message);
+        };
+
+        function playerTurn(choice) {
+            switch (choice) {
+                case 1:
+                    explorePhase(player, enemies, traps, chests, dungeon);
+                    break;
+
+                case 2:
+                    player.heal();
+                    console.log("You have been healed.\n \n");
+                    break;
+
+                case 3:
+                    player.display();
+                    break;
+
+                case 4:
+                    console.log("Thank you for playing! Goodbye.\n \n");
+                    exit(0);
+
+                default:
+                    console.log("Invalid choice. Please try again.\n \n");
+            }
+        }
+
+        function explorePhase(player, enemies, traps, chests, dungeon) {
+            const enemyCount = Math.floor(Math.random() * 3) + 1;
+
+            for (let i = 0; i < enemyCount; ++i) {
+                enemies.push(new Enemy(
+                    50 + (player.level - 1) * 10,
+                    15 + (player.level - 1) * 5,
+                    player.level,
+                    `Enemy${i + 1}`,
+                    `SpecialAttack${i + 1}`
+                ));
+            }
+
+            for (const enemy of enemies) {
+                player.display();
+                enemy.display();
+
+                console.log("1. Attack\n2. Use Special Attack\n3. Retreat");
+                let choice = parseInt(prompt());
+
+                if (choice === 1) {
+                    enemy.takeDamage(player.attack);
+                    if (enemy.health <= 0) {
+                        console.log("You defeated the enemy!");
+                        player.addToInventory("Potion");
+                    } else {
+                        enemy.attackPlayer(player);
+                        if (player.health <= 0) {
+                            console.log("You were defeated by the enemy!");
+                            exit(0);
+                        }
+                    }
+                } else if (choice === 2) {
+                    player.performSpecialAttack(enemy);
+                    if (enemy.health <= 0) {
+                        console.log("You defeated the enemy!");
+                        player.addToInventory("Potion");
+                    } else {
+                        enemy.attackPlayer(player);
+                        if (player.health <= 0) {
+                            console.log("You were defeated by the enemy!");
+                            exit(0);
+                        }
+                    }
+                } else {
+                    console.log("You successfully retreated from the battle.");
+                }
+            }
+
+            dungeon[Math.floor(Math.random() * dungeon.length)][Math.floor(Math.random() * dungeon[0].length)] = 'V';
+
+            console.log("You cleared the enemies! Continue exploring...\n \n");
+            player.levelUp();
+        }
+
+        function generateRandomEvent(player, traps, chests) {
+            const randomEvent = Math.floor(Math.random() * 10);
+
+            if (randomEvent < 4) {
+                chests.push(new Chest());
+                player.display();
+                chests[chests.length - 1].display();
+
+                console.log("1. Open the chest\n2. Leave the chest");
+                let choice = parseInt(prompt());
+
+                if (choice === 1) {
+                    if (chests[chests.length - 1].content === "Better Sword") {
+                        player.addToInventory("Better Sword");
+                    } else if (chests[chests.length - 1].content === "Healing Potion") {
+                        player.addToInventory("Healing Potion");
+                        player.heal();
+                    } else {
+                        console.log("You found some Gold!\n \n");
+                    }
+                }
+
+                chests.pop();
+            } else if (randomEvent < 7) {
+                const trapIndex = Math.floor(Math.random() * traps.length);
+                traps[trapIndex].trigger(player);
+            }
+        }
+
+        function encounterBoss(player, boss) {
+            console.log("You've encountered a formidable Boss!");
             player.display();
-            break;
+            boss.display();
 
-        case 4:
-            console.log("Thank you for playing! Goodbye.\n \n");
-            exit(0);
+            let choice;
+            console.log("1. Attack\n2. Use Special Attack\n3. Retreat");
+            choice = parseInt(prompt("Enter your choice:"));
 
-        default:
-            console.log("Invalid choice. Please try again.\n \n");
-    }
-}
-
-
-function explorePhase(player, enemies, traps, chests, dungeon) {
-    const enemyCount = Math.floor(Math.random() * 3) + 1;
-
-    for (let i = 0; i < enemyCount; ++i) {
-        enemies.push(new Enemy(
-            50 + (player.level - 1) * 10,
-            15 + (player.level - 1) * 5,
-            player.level,
-            `Enemy${i + 1}`,
-            `SpecialAttack${i + 1}`
-        ));
-    }
-
-    for (const enemy of enemies) {
-        player.display();
-        enemy.display();
-
-        console.log("1. Attack\n2. Use Special Attack\n3. Retreat");
-        let choice = parseInt(prompt());
-
-        if (choice === 1) {
-            enemy.takeDamage(player.attack);
-            if (enemy.health <= 0) {
-                console.log("You defeated the enemy!");
-                player.addToInventory("Potion");
-            } else {
-                enemy.attackPlayer(player);
-                if (player.health <= 0) {
-                    console.log("You were defeated by the enemy!");
+            if (choice === 1) {
+                boss.takeDamage(player.attack);
+                if (boss.health <= 0) {
+                    console.log("Congratulations! You defeated the Boss and cleared the dungeon!");
                     exit(0);
+                } else {
+                    boss.performSpecialAttack(player);
+                    if (player.health <= 0) {
+                        console.log("You were defeated by the Boss!");
+                        exit(0);
+                    }
                 }
-            }
-        } else if (choice === 2) {
-            player.performSpecialAttack(enemy);
-            if (enemy.health <= 0) {
-                console.log("You defeated the enemy!");
-                player.addToInventory("Potion");
-            } else {
-                enemy.attackPlayer(player);
-                if (player.health <= 0) {
-                    console.log("You were defeated by the enemy!");
+            } else if (choice === 2) {
+                player.performSpecialAttack(boss);
+                if (boss.health <= 0) {
+                    console.log("Congratulations! You defeated the Boss and cleared the dungeon!");
                     exit(0);
+                } else {
+                    boss.performSpecialAttack(player);
+                    if (player.health <= 0) {
+                        console.log("You were defeated by the Boss!");
+                        exit(0);
+                    }
                 }
-            }
-        } else {
-            console.log("You successfully retreated from the battle.");
-        }
-    }
-
-    // Update dungeon map (mark as visited)
-    dungeon[Math.floor(Math.random() * dungeon.length)][Math.floor(Math.random() * dungeon[0].length)] = 'V';
-
-    // Player has successfully cleared the enemies
-    console.log("You cleared the enemies! Continue exploring...\n \n");
-    player.levelUp();
-}
-
-
-function generateRandomEvent(player, traps, chests) {
-    const randomEvent = Math.floor(Math.random() * 10); // Increase the likelihood of random events
-
-    if (randomEvent < 4) {
-        // Player encounters a chest
-        chests.push(new Chest());
-        player.display();
-        chests[chests.length - 1].display();
-
-        console.log("1. Open the chest\n2. Leave the chest");
-        let choice = parseInt(prompt());
-
-        if (choice === 1) {
-            if (chests[chests.length - 1].content === "Better Sword") {
-                player.addToInventory("Better Sword");
-            } else if (chests[chests.length - 1].content === "Healing Potion") {
-                player.addToInventory("Healing Potion");
-                player.heal();
             } else {
-                console.log("You found some Gold!\n \n");
+                console.log("You successfully retreated from the Boss battle.");
             }
         }
 
-        chests.pop();
-    } else if (randomEvent < 7) {
-        // Player encounters a trap
-        const trapIndex = Math.floor(Math.random() * traps.length);
-        traps[trapIndex].trigger(player);
-    }
-}
+        function main() {
+            console.log("Welcome to the Enhanced Roguelite Dungeon Crawler!");
 
+            do {
+                for (let i = 0; i < dungeonSize; ++i) {
+                    console.log(dungeon[i].join(" "));
+                }
 
- function encounterBoss(player, boss) {
-    console.log("You've encountered a formidable Boss!");
-    player.display();
-    boss.display();
+                playerTurn(parseInt(prompt("Enter your choice:")));
 
-    let choice;
-    console.log("1. Attack\n2. Use Special Attack\n3. Retreat");
-    choice = parseInt(prompt("Enter your choice:"));
+                generateRandomEvent(player, traps, chests);
 
-    if (choice === 1) {
-        boss.takeDamage(player.attack);
-        if (boss.health <= 0) {
-            console.log("Congratulations! You defeated the Boss and cleared the dungeon!");
-            exit(0);
-        } else {
-            boss.performSpecialAttack(player);
-            if (player.health <= 0) {
-                console.log("You were defeated by the Boss!");
-                exit(0);
-            }
-        }
-    } else if (choice === 2) {
-        player.performSpecialAttack(boss);
-        if (boss.health <= 0) {
-            console.log("Congratulations! You defeated the Boss and cleared the dungeon!");
-            exit(0);
-        } else {
-            boss.performSpecialAttack(player);
-            if (player.health <= 0) {
-                console.log("You were defeated by the Boss!");
-                exit(0);
-            }
-        }
-    } else {
-        console.log("You successfully retreated from the Boss battle.");
-    }
-}
+                if (player.level >= 5 && Math.random() < 0.5) {
+                    encounterBoss(player, boss);
+                }
 
-
-function main() {
-    const dungeonSize = 10;
-    const dungeon = Array.from({ length: dungeonSize }, () => Array(dungeonSize).fill('.'));
-
-    const player = new Player(100, 5);
-    const enemies = [];
-    const traps = [];
-    const chests = [];
-    const shop = new Shop();
-    const boss = new Boss(300, 25);
-
-    console.log("Welcome to the Enhanced Roguelite Dungeon Crawler!");
-
-    do {
-        for (let i = 0; i < dungeonSize; ++i) {
-            console.log(dungeon[i].join(" "));
+            } while (true);
         }
 
-        playerTurn(player, enemies, traps, chests, dungeon, shop);
-
-        // Generate random events during exploration
-        generateRandomEvent(player, traps, chests);
-
-        // Introduce Boss encounter after reaching a certain level
-        if (player.level >= 5 && Math.random() < 0.5) {
-            encounterBoss(player, boss);
-        }
-
-    } while (true);
-}
-
-main();
-
-
-
+        main();
+    </script>
 </body>
 </html>
