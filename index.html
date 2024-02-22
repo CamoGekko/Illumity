@@ -222,17 +222,48 @@
             const shop = new Shop();
             const boss = new Boss(300, 25);
     
-            function displayOutput(message) {
-                const outputElement = document.getElementById("game-output");
-                outputElement.textContent += message + "\n";
+           // Function to update the UI with the provided message
+        function displayOutput(message) {
+            const outputElement = document.getElementById("game-output");
+            outputElement.textContent += message + "\n";
+        }
+
+        // Function to clear the screen
+        function clearScreen() {
+            const outputElement = document.getElementById("game-output");
+            outputElement.textContent = "";
+        }
+
+        // Override console.log to use displayOutput
+        console.log = function (message) {
+            displayOutput(message);
+        };
+
+        function switchButtonSet(isExploring) {
+            const buttonContainer = document.getElementById("button-container");
+            buttonContainer.innerHTML = "";
+
+            if (isExploring) {
+                addButton("1. Explore", 1);
+                addButton("2. Heal", 2);
+                addButton("3. View Inventory", 3);
+                addButton("4. Quit", 4);
+            } else {
+                addButton("1. Attack", 1);
+                addButton("2. Use Special Attack", 2);
+                addButton("3. Retreat", 3);
             }
-    
-            function clearScreen() {
-                const outputElement = document.getElementById("game-output");
-                outputElement.textContent = "";
-            }
-    
-            console.log = displayOutput(game-output)
+        }
+
+        function addButton(label, value) {
+            const buttonContainer = document.getElementById("button-container");
+            const button = document.createElement("button");
+            button.textContent = label;
+            button.onclick = function () {
+                makeChoice(value);
+            };
+            buttonContainer.appendChild(button);
+        }
           
     
             function playerTurn(choice) {
