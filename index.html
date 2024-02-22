@@ -32,10 +32,10 @@
     <h1>Welcome CamoGekko's web dungeon crawler</h1>
     <pre id="game-output"></pre>
     <div id="button-container">
-        <button onclick="makeChoice(1)">1. Explore</button>
-        <button onclick="makeChoice(2)">2. Heal</button>
-        <button onclick="makeChoice(3)">3. View Inventory</button>
-        <button onclick="makeChoice(4)">4. Quit</button>
+        <button onclick="playerTurn(1)">1. Explore</button>
+        <button onclick="playerTurn(2)">2. Heal</button>
+        <button onclick="playerTurn(3)">3. View Inventory</button>
+        <button onclick="playerTurn(4)">4. Quit</button>
     </div>
 
     <script>
@@ -221,21 +221,6 @@
         const chests = [];
         const shop = new Shop();
         const boss = new Boss(300, 25);
-
-        function makeChoice(choice) {
-            clearScreen();
-            switch (choice) {
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                    playerTurn(choice);
-                    break;
-
-                default:
-                    displayOutput("Invalid choice. Please try again.");
-            }
-        }
 
         function displayOutput(message) {
             const outputElement = document.getElementById("game-output");
