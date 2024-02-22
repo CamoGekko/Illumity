@@ -291,7 +291,7 @@
                 }
             }
     
-            function explorePhase(player, enemies, traps, chests, dungeon) {
+       function explorePhase(player, enemies, traps, chests, dungeon) {
     const enemyCount = Math.floor(Math.random() * 3) + 1;
 
     for (let i = 0; i < enemyCount; ++i) {
@@ -305,7 +305,7 @@
     }
 
     function handleCombatChoice(choice) {
-        const enemy = enemies.shift(); // Take the first enemy in the array
+        const enemy = enemies[0]; // Take the first enemy in the array
 
         switch (choice) {
             case 1:
@@ -345,6 +345,9 @@
                 break;
         }
 
+        // Remove the defeated enemy from the array
+        enemies.shift();
+
         // Check if there are more enemies
         if (enemies.length > 0) {
             displayOutput("Choose your action:");
@@ -363,18 +366,11 @@
     displayOutput("Choose your action:");
     switchButtonSet(false); // Switch buttons for combat
 
-    // Temporarily using prompt for simplicity; replace it with your input method
-    // The actual input method might involve button clicks or some other user interaction
-    function combatChoicePrompt() {
-        let choice = parseInt(prompt());
-        handleCombatChoice(choice);
-    }
-
     // Example: Set up a listener for button clicks corresponding to combat choices
-    document.getElementById("button-container").addEventListener("click", function (event) {
+    document.getElementById("button-container").onclick = function (event) {
         const choice = parseInt(event.target.value);
         handleCombatChoice(choice);
-    });
+    };
 }
 
     
