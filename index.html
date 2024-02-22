@@ -8,6 +8,7 @@
         body {
             background-color: black;
             color: white;
+            font-size: 25;
             font-family: 'Courier New', monospace;
             text-align: center;
             margin-top: 20px;
@@ -28,7 +29,7 @@
     </style>
 </head>
 <body>
-    <h1>Welcome to the Enhanced Roguelite Dungeon Crawler!</h1>
+    <h1>Welcome CamoGekko's web dungeon crawler</h1>
     <pre id="game-output"></pre>
     <div>
         <button onclick="makeChoice(1)">1. Explore</button>
@@ -222,6 +223,7 @@
         const boss = new Boss(300, 25);
 
         function makeChoice(choice) {
+            clearScreen();
             switch (choice) {
                 case 1:
                 case 2:
@@ -238,7 +240,11 @@
         function displayOutput(message) {
             const outputElement = document.getElementById("game-output");
             outputElement.textContent += message + "\n";
-            outputElement.scrollTop = outputElement.scrollHeight; // Auto-scroll to the bottom
+        }
+
+        function clearScreen() {
+            const outputElement = document.getElementById("game-output");
+            outputElement.textContent = "";
         }
 
         console.log = function (message) {
@@ -318,99 +324,13 @@
                 }
             }
 
+            // Update dungeon map (mark as visited)
             dungeon[Math.floor(Math.random() * dungeon.length)][Math.floor(Math.random() * dungeon[0].length)] = 'V';
 
+            // Player has successfully cleared the enemies
             console.log("You cleared the enemies! Continue exploring...\n \n");
             player.levelUp();
         }
-
-        function generateRandomEvent(player, traps, chests) {
-            const randomEvent = Math.floor(Math.random() * 10);
-
-            if (randomEvent < 4) {
-                chests.push(new Chest());
-                player.display();
-                chests[chests.length - 1].display();
-
-                console.log("1. Open the chest\n2. Leave the chest");
-                let choice = parseInt(prompt());
-
-                if (choice === 1) {
-                    if (chests[chests.length - 1].content === "Better Sword") {
-                        player.addToInventory("Better Sword");
-                    } else if (chests[chests.length - 1].content === "Healing Potion") {
-                        player.addToInventory("Healing Potion");
-                        player.heal();
-                    } else {
-                        console.log("You found some Gold!\n \n");
-                    }
-                }
-
-                chests.pop();
-            } else if (randomEvent < 7) {
-                const trapIndex = Math.floor(Math.random() * traps.length);
-                traps[trapIndex].trigger(player);
-            }
-        }
-
-        function encounterBoss(player, boss) {
-            console.log("You've encountered a formidable Boss!");
-            player.display();
-            boss.display();
-
-            let choice;
-            console.log("1. Attack\n2. Use Special Attack\n3. Retreat");
-            choice = parseInt(prompt("Enter your choice:"));
-
-            if (choice === 1) {
-                boss.takeDamage(player.attack);
-                if (boss.health <= 0) {
-                    console.log("Congratulations! You defeated the Boss and cleared the dungeon!");
-                    exit(0);
-                } else {
-                    boss.performSpecialAttack(player);
-                    if (player.health <= 0) {
-                        console.log("You were defeated by the Boss!");
-                        exit(0);
-                    }
-                }
-            } else if (choice === 2) {
-                player.performSpecialAttack(boss);
-                if (boss.health <= 0) {
-                    console.log("Congratulations! You defeated the Boss and cleared the dungeon!");
-                    exit(0);
-                } else {
-                    boss.performSpecialAttack(player);
-                    if (player.health <= 0) {
-                        console.log("You were defeated by the Boss!");
-                        exit(0);
-                    }
-                }
-            } else {
-                console.log("You successfully retreated from the Boss battle.");
-            }
-        }
-
-        function main() {
-            console.log("Welcome to the Enhanced Roguelite Dungeon Crawler!");
-
-            do {
-                for (let i = 0; i < dungeonSize; ++i) {
-                    console.log(dungeon[i].join(" "));
-                }
-
-                playerTurn(parseInt(prompt("Enter your choice:")));
-
-                generateRandomEvent(player, traps, chests);
-
-                if (player.level >= 5 && Math.random() < 0.5) {
-                    encounterBoss(player, boss);
-                }
-
-            } while (true);
-        }
-
-        main();
     </script>
 </body>
 </html>
