@@ -1,36 +1,44 @@
 <!DOCTYPE HTML>
-    <html lang="en-us">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <title>Doom Emulator</title>
-        <style type="text/css">
-            .dosbox-container {
-                width: 640px;
-                height: 400px;
-            }
+<html lang="en-us">
 
-            .dosbox-container>.dosbox-overlay {
-                background: url('doom-cover.png');
-            }
-        </style>
-    </head>
-        <body>
-            <div id="dosbox"></div>
-            <br />
-            <button onclick="dosbox.requestFullScreen();">Make fullscreen</button>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Doom Emulator</title>
+    <style type="text/css">
+        .dosbox-container {
+            width: 640px;
+            height: 400px;
+        }
 
-            <script type="text/javascript" src="https://js-dos.com/cdn/dos.js"></script>
-            <script type="text/javascript">
-                var dosbox = new Dosbox({
-                    id: "dosbox",
-                    onload: function (dosbox) {
-                        dosbox.run("./Doom2.wad");
-                    },
-                    onrun: function (dosbox, app) {
-                        console.log("App '" + app + "' is runned");
-                    }
-                });
-            </script>
-    </body>
+        .dosbox-container > .dosbox-overlay {
+            background: url('doom-cover.png');
+        }
+    </style>
+</head>
+
+<body>
+    <div id="dosbox"></div>
+    <br />
+    <button onclick="dosbox.requestFullScreen();">Make fullscreen</button>
+
+    <script type="text/javascript" src="https://js-dos.com/cdn/js-dos-api.js"></script>
+    <script type="text/javascript" src="https://js-dos.com/cdn/dos.js"></script>
+    <script type="text/javascript">
+        // Wait for the scripts to be fully loaded
+        window.addEventListener("DOMContentLoaded", function () {
+            var dosbox = new Dosbox({
+                id: "dosbox",
+                onload: function (dosbox) {
+                    // Adjust the path to your Doom 2 WAD file
+                    dosbox.run("path/to/Doom2.wad");
+                },
+                onrun: function (dosbox, app) {
+                    console.log("App '" + app + "' is runned");
+                }
+            });
+        });
+    </script>
+</body>
+
 </html>
