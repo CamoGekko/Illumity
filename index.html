@@ -1,43 +1,21 @@
-<!DOCTYPE HTML>
-<html lang="en-us">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>system32</title>
-    <style type="text/css">
-        .dosbox-container {
-            width: 640px;
-            height: 420px;
-        }
-
-        .dosbox-container > .dosbox-overlay {
-            background: url('dosbox.png');
-        }
-    </style>
+    <title>JSLinux</title>
+    <link href="style.css" type="text/css" rel="stylesheet"/>
 </head>
-    
 <body>
-    <div id="dosbox"></div>
-    <br />
-    <button onclick="dosbox.requestFullScreen();">Make fullscreen</button>
-
-    <script type="text/javascript" src="js-dos-api.js"></script>
-    <script type="text/javascript" src="js-dos-v3.js"></script>
-    <script type="text/javascript">
-        // Wait for the scripts to be fully loaded
-        window.addEventListener("DOMContentLoaded", function () {
-            var dosbox = new Dosbox({
-                id: "dosbox",
-                onload: function (dosbox) {
-                    dosbox.run("doomjs.zip");
-                },
-                onrun: function (dosbox, app) {
-                    console.log("App '" + app + "' is runned");
-                }
-            });
-        });
-    </script>
-</body>
-
-</html>
+<div id="term_wrap">
+    <div id="term_container">
+    </div>
+    <div id="term_bar">
+      <label>
+       <img title="Upload files" src="images/upload-icon.png"><input type="file" id="files" multiple onchange="on_update_files(this.files)">
+      </label>
+      <progress id="net_progress">
+      </progress>
+    </div>
+</div>
+<script type="text/javascript" src="term.js"></script>
+<script type="text/javascript" src="jslinux.js"></script>
+<div id="copyright">© 2011-2021 Fabrice Bellard - <a href="news.html">News</a> - <a href="index.html">VM list</a> - <a href="faq.html">FAQ</a> - <a href="tech.html">Technical notes</a></div>
